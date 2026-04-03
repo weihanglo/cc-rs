@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.59](https://github.com/weihanglo/cc-rs/compare/cc-v1.2.58...cc-v1.2.59) - 2026-04-03
+
+### Other
+
+- Fix target abi parsing dor sanitiser targets ([#1695](https://github.com/weihanglo/cc-rs/pull/1695))
+
 ## [1.2.58](https://github.com/rust-lang/cc-rs/compare/cc-v1.2.57...cc-v1.2.58) - 2026-03-27
 
 ### Other
