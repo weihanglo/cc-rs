@@ -84,6 +84,31 @@ fn main() -> ExitCode {
         }
     }
 
+    // Emulate the real compilers that compiler family detection runs against:
+    // - `-E <detect_compiler_family.c>` prints the `#pragma message` markers
+    //   the detection looks for on stdout.
+    // - GCC-like compilers reject the cl-style `-?` help flag.
+    // Without this, detection through the shim would misidentify it as MSVC
+    // (empty `-E` output, `-?` accepted).
+    let file_name = PathBuf::from(program)
+        .file_name()
+        .map(|name| name.to_string_lossy().into_owned())
+        .unwrap_or_default();
+    if file_name.starts_with("gcc") || file_name.starts_with("cc") || file_name.starts_with("clang")
+    {
+        if args.clone().any(|a| a == "-?") {
+            eprintln!("{program}: unrecognized command-line option '-?'");
+            return ExitCode::FAILURE;
+        }
+        if args.clone().any(|a| a == "-E") {
+            if file_name.starts_with("clang") {
+                println!("#pragma message \"clang\"");
+            }
+            println!("#pragma message \"gcc\"");
+            return ExitCode::SUCCESS;
+        }
+    }
+
     // Allow tests to make the shim fail when a specific arg is present.
     if let Some(fail_arg) = env::var("CC_SHIM_FAIL_IF_ARG").ok() {
         if args.any(|a| a == &fail_arg) {
