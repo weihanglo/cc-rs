@@ -2079,7 +2079,7 @@ impl Build {
 
         // Add path remap flags inherited from cargo's `-Ztrim-paths`.
         if self.inherit_trim_paths {
-            self.add_trim_paths_flags(&mut cmd)?;
+            self.add_trim_paths_flags(&mut cmd, &target)?;
         }
 
         // Set flags configured in the builder (do this second-to-last, to allow these to override
@@ -2703,7 +2703,7 @@ impl Build {
     /// to rustc, joined by the platform path separator.
     ///
     /// [`trim-paths`]: https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#profile-trim-paths-option
-    fn add_trim_paths_flags(&self, cmd: &mut Tool) -> Result<(), Error> {
+    fn add_trim_paths_flags(&self, cmd: &mut Tool, target: &TargetInfo<'_>) -> Result<(), Error> {
         // MSVC has no equivalent of the `-f*-prefix-map` flag family.
         // clang-cl would need the flags wrapped in `/clang:`, left out until
         // there is demand for it.
@@ -2745,16 +2745,36 @@ impl Build {
             return Ok(());
         }
 
+        let pairs = env::split_paths(&remap)
+            .map(PathBuf::into_os_string)
+            .filter(|pair| !pair.is_empty())
+            .collect::<Vec<_>>();
+        let first_pair = match pairs.first() {
+            Some(pair) => pair,
+            None => return Ok(()),
+        };
+
         // `-fdebug-prefix-map` is supported by virtually every GCC/Clang in
-        // use, while `-fmacro-prefix-map` needs GCC >= 8 or Clang >= 10.
-        // Both are only emitted when the user opted into path trimming on a
-        // nightly toolchain, so requiring a reasonably modern C compiler for
-        // the `macro` scope is acceptable.
-        for pair in env::split_paths(&remap) {
-            let pair = pair.as_os_str();
-            if pair.is_empty() {
-                continue;
+        // use, while `-fmacro-prefix-map` needs GCC >= 8 or Clang >= 10, so
+        // probe for support before emitting it.
+        if macro_scope {
+            let mut probe = OsString::from("-fmacro-prefix-map=");
+            probe.push(first_pair);
+            macro_scope = self
+                .is_flag_supported_inner(&probe, cmd, target)
+                .unwrap_or(false);
+            if !macro_scope {
+                self.cargo_output.print_warning(&format_args!(
+                    "-fmacro-prefix-map is not supported by {:?}, paths embedded by `__FILE__` will not be remapped",
+                    cmd.path()
+                ));
             }
+        }
+        if !macro_scope && !object_scope {
+            return Ok(());
+        }
+
+        for pair in &pairs {
             if macro_scope {
                 let mut flag = OsString::from("-fmacro-prefix-map=");
                 flag.push(pair);
