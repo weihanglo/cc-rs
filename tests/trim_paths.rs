@@ -36,7 +36,7 @@ fn scope_all() {
 
     let cmd = test.cmd(0);
     for flag in MACRO_FLAGS.iter().chain(OBJECT_FLAGS) {
-        cmd.must_not_have(flag);
+        cmd.must_have(flag);
     }
 }
 
@@ -50,7 +50,7 @@ fn scope_macro() {
 
     let cmd = test.cmd(0);
     for flag in MACRO_FLAGS {
-        cmd.must_not_have(flag);
+        cmd.must_have(flag);
     }
     for flag in OBJECT_FLAGS {
         cmd.must_not_have(flag);
@@ -67,7 +67,7 @@ fn scope_object() {
 
     let cmd = test.cmd(0);
     for flag in OBJECT_FLAGS {
-        cmd.must_not_have(flag);
+        cmd.must_have(flag);
     }
     for flag in MACRO_FLAGS {
         cmd.must_not_have(flag);
@@ -86,7 +86,7 @@ fn scope_macro_and_diagnostics() {
 
     let cmd = test.cmd(0);
     for flag in MACRO_FLAGS {
-        cmd.must_not_have(flag);
+        cmd.must_have(flag);
     }
     for flag in OBJECT_FLAGS {
         cmd.must_not_have(flag);
@@ -116,6 +116,24 @@ fn no_env_vars() {
     test.env.remove("CARGO_TRIM_PATHS_REMAP");
 
     test.gcc().file("foo.c").compile("foo");
+
+    let cmd = test.cmd(0);
+    for flag in MACRO_FLAGS.iter().chain(OBJECT_FLAGS) {
+        cmd.must_not_have(flag);
+    }
+}
+
+/// `Build::inherit_trim_paths(false)` opts out of the inheritance.
+#[test]
+fn opt_out() {
+    let mut test = Test::gnu();
+    test.env.set("CARGO_TRIM_PATHS_SCOPE", "all");
+    test.env.set("CARGO_TRIM_PATHS_REMAP", REMAP);
+
+    test.gcc()
+        .inherit_trim_paths(false)
+        .file("foo.c")
+        .compile("foo");
 
     let cmd = test.cmd(0);
     for flag in MACRO_FLAGS.iter().chain(OBJECT_FLAGS) {
