@@ -140,3 +140,19 @@ fn opt_out() {
         cmd.must_not_have(flag);
     }
 }
+
+/// `-fmacro-prefix-map` needs GCC >= 8 or Clang >= 10. A compiler rejecting
+/// the flag currently fails the build, as remap flags are emitted without
+/// probing for compiler support.
+#[test]
+fn unsupported_macro_flag() {
+    let mut test = Test::gnu();
+    test.env.set("CARGO_TRIM_PATHS_SCOPE", "macro");
+    test.env.set("CARGO_TRIM_PATHS_REMAP", REMAP);
+    // Simulate a compiler that errors out on the remap flag.
+    test.env.set("CC_SHIM_FAIL_IF_ARG", MACRO_FLAGS[0]);
+
+    let result = test.gcc().file("foo.c").try_compile("foo");
+
+    assert!(result.is_err());
+}
