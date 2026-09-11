@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.10](https://github.com/weihanglo/cc-rs/compare/find-msvc-tools-v0.1.9...find-msvc-tools-v0.1.10) - 2026-09-11
+
+### Other
+
+- release ([#1668](https://github.com/weihanglo/cc-rs/pull/1668))
+- Add `find_windows_sdk` API ([#1663](https://github.com/weihanglo/cc-rs/pull/1663))
+- release ([#1658](https://github.com/weihanglo/cc-rs/pull/1658))
+- Regenerate windows sys bindings ([#1653](https://github.com/weihanglo/cc-rs/pull/1653))
+- release ([#1651](https://github.com/weihanglo/cc-rs/pull/1651))
+- Fix tool existence check in find_tool method ([#1645](https://github.com/weihanglo/cc-rs/pull/1645))
+- Fix SdkInfo::find_tool to check for executable extension ([#1644](https://github.com/weihanglo/cc-rs/pull/1644))
+- release ([#1643](https://github.com/weihanglo/cc-rs/pull/1643))
+- Update Readmes ([#1641](https://github.com/weihanglo/cc-rs/pull/1641))
+- release ([#1611](https://github.com/weihanglo/cc-rs/pull/1611))
+- Add Visual Studio 2026 support ([#1609](https://github.com/weihanglo/cc-rs/pull/1609))
+- release ([#1593](https://github.com/weihanglo/cc-rs/pull/1593))
+- Allow using VCToolsVersion to request a specific msvc version ([#1589](https://github.com/weihanglo/cc-rs/pull/1589))
+- Regenerate windows sys bindings ([#1591](https://github.com/weihanglo/cc-rs/pull/1591))
+- release ([#1583](https://github.com/weihanglo/cc-rs/pull/1583))
+- Regenerate windows sys bindings ([#1572](https://github.com/weihanglo/cc-rs/pull/1572))
+- release ([#1558](https://github.com/weihanglo/cc-rs/pull/1558))
+- [win] Search the Windows SDK for tools as well ([#1553](https://github.com/weihanglo/cc-rs/pull/1553))
+- release ([#1542](https://github.com/weihanglo/cc-rs/pull/1542))
+- Regenerate windows sys bindings ([#1548](https://github.com/weihanglo/cc-rs/pull/1548))
+- Add fn get_ucrt_dir for find-msvc-tools ([#1546](https://github.com/weihanglo/cc-rs/pull/1546))
+- Extract windows-find-tools ([#1531](https://github.com/weihanglo/cc-rs/pull/1531))
+
 ## [0.1.9](https://github.com/rust-lang/cc-rs/compare/find-msvc-tools-v0.1.8...find-msvc-tools-v0.1.9) - 2026-01-30
 
 ### Other
